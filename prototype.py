@@ -1,4 +1,6 @@
 import pandas as pd
+import json
+import time
 
 frame = 'data/2021-02-23_Villa_8-4.csv'
 
@@ -29,6 +31,31 @@ indexFrame = pd.DataFrame(list(zip(indices, indices_no, frame_depth)),
 print(indexFrame)
 print(indexFrame["Index"][1])
 
+df = pd.read_csv(frame, sep='\,', header=None, skiprows=8, nrows=11, engine='python')
+print(df[3])
 
-df = pd.read_csv(frame, sep='\,', header=None, skiprows=4, nrows=2, engine='python')
-print(df)
+
+
+class Player:
+    def __init__(self, alias=[]):
+        self.playerid = time.time()
+        self.alias = alias
+        self.matches = []
+
+    def getName(self):
+        return self.alias[len(self.alias)-1]
+
+    def newAlias(self, new_name):
+        self.alias.append(new_name)
+
+
+
+test = Player(["MikeAlpaXRay"])
+print(test.playerid)
+print(test.getName())
+print(test.alias)
+test.newAlias("MikeAlpaX.NGNS")
+print(test.playerid)
+print(test.getName())
+print(test.alias)
+
