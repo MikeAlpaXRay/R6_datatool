@@ -46,7 +46,7 @@ matchid
 mode
 map
 win
-rounds
+rounds = []
 
 
 rounds

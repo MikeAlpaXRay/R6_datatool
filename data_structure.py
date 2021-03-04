@@ -1,7 +1,13 @@
+import time
+
+
+
+
+
+
 class Player:
-    def __init__(self, alias=[]):
-        self.playerid = time.time()
-        self.alias = alias
+    def __init__(self, name):
+        self.alias = self.newAlias(name)
         self.matches = []
 
     def getName(self):
@@ -11,38 +17,55 @@ class Player:
         self.alias.append(new_name)
 
     def addMatch(self):
-        self.matches.append()
+        self.matches.append(Playermatch[self.getName()])
 
 
 class Playermatch:
-    def __init__(self):
-        self.date=date
-        self.matchid=matchid
-        self.mode=mode
-        self.map=map
-        self.win=win
-        self.playerRating=playerRating
-        self.ATKRating=ATKRating
-        self.DEFRating=DEFRating
-        self.KOST=KOST
-        self.KPR=KPR
-        self.SRV=SRV
-        self.kills=kills
-        self.headshots=headshots
-        self.underdogKills=underdogKills
-        self.vX=vX
-        self.multikillRounds=multikillRounds
-        self.deaths=deaths
-        self.tradedDeaths=tradedDeaths
-        self.tradedbyEnemy=tradedbyEnemy
-        self.openingKills=openingKills
-        self.openingDeaths=openingDeaths
-        self.entryKills=entryKills
-        self.entryDeaths=entryDeaths
-        self.plantedDefuser=plantedDefuser
-        self.disabledDefuser=disabledDefuser
-        self.teamkills=teamkills
-        self.teamkilled=teamkilled
+    def __init__(self, playermatchstats):
+        self.matchid=playermatchstats[""]
+        self.date=playermatchstats[""]
+        self.mode=playermatchstats[""]
+        self.map=playermatchstats[""]
+        self.win=playermatchstats[""]
+        self.playerRating=playermatchstats[""]
+        self.ATKRating=playermatchstats[""]
+        self.DEFRating=playermatchstats[""]
+        self.KOST=playermatchstats[""]
+        self.KPR=playermatchstats[""]
+        self.SRV=playermatchstats[""]
+        self.kills=playermatchstats[""]
+        self.headshots=playermatchstats[""]
+        self.underdogKills=playermatchstats[""]
+        self.vX=playermatchstats[""]
+        self.multikillRounds=playermatchstats[""]
+        self.deaths=playermatchstats[""]
+        self.tradedDeaths=playermatchstats[""]
+        self.tradedbyEnemy=playermatchstats[""]
+        self.openingKills=playermatchstats[""]
+        self.openingDeaths=playermatchstats[""]
+        self.entryKills=playermatchstats[""]
+        self.entryDeaths=playermatchstats[""]
+        self.plantedDefuser=playermatchstats[""]
+        self.disabledDefuser=playermatchstats[""]
+        self.teamkills=playermatchstats[""]
+        self.teamkilled=playermatchstats[""]
 
-class Team():
+
+
+class Team:
+    def __init__(self, name):
+        self.name=name
+        self.teammatch=[]
+
+    def addMatch(self):
+        self.teammatch.append()
+
+
+class Teammatch:
     def __init__(self):
+        self.matchID = matchid
+        self.mode = mode
+        self.map = played_map
+        self.team
+
+

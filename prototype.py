@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 frame = 'data/2021-02-23_Villa_8-4.csv'
 
 indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA", "ROUND EVENTS BREAKDOWN"]
@@ -26,7 +25,8 @@ indexFrame = pd.DataFrame(list(zip(indices, indices_no, frame_depth)),
                           columns=['Name', 'Index', 'Depth'])
 
 for idx, name in enumerate(indices):
-    dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx], nrows=indexFrame["Depth"][idx],
+    dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx],
+                            nrows=indexFrame["Depth"][idx],
                             engine='python')
     dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx] + 1,
                             nrows=indexFrame["Depth"][idx] - 1, engine='python', names=dataframe.iloc[0].values)
@@ -41,10 +41,13 @@ for idx, name in enumerate(indices):
     elif idx == 4:
         round_event_breakdown = dataframe.iloc[:, :-1]
 
+
+def getplayerindex(playername, match_performance):
+    return match_performance.Player[match_performance.Player == playername].index[0]
+
+
 print(map_overview)
-print(match_performance)
+print(match_performance.iloc[match_performance.Player[match_performance.Player == "one.DR"].index[0]])
 print(sixth_pick_overview)
 print(player_round_data)
 print(round_event_breakdown)
-
-

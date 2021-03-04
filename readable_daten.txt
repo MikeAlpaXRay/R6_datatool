@@ -28,4 +28,6 @@ planted defuser
 disabled defuser
 teamkills
 teamkilled
-round/objective/outcome/team
+
+
+round/side/outcome/team/objective/endbedingung
