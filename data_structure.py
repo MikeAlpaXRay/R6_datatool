@@ -43,3 +43,6 @@ class Playermatch:
         self.disabledDefuser=disabledDefuser
         self.teamkills=teamkills
         self.teamkilled=teamkilled
+
+class Team():
+    def __init__(self):
