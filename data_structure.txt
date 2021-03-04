@@ -1,5 +1,3 @@
-
-
 playerid
 alias
 playermatch
@@ -33,6 +31,8 @@ PlantedDefuser
 DisabledDefuser
 Teamkills
 Teamkilled
+
+
 
 
 team
