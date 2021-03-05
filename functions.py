@@ -1,35 +1,30 @@
 import pandas as pd
-import json
+import pickle
+from os.path import exists
 
-
-indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA", "ROUND EVENTS BREAKDOWN"]
 
 def loadData():
     all_players = []
     all_teams = []
-    with open("data\\player_data.json", 'r') as json_file:
-        json_data = json.load(json_file)
-        for entry in json_data:
-            all_players.append(entry)
-    with open("data\\team_data.json", 'r') as json_file:
-        json_data = json.load(json_file)
-        for entry in json_data:
-            all_teams.append(entry)
+
+    if exists("data\\player_data.txt"):
+        file_pi2 = open("data\\player_data.txt", 'rb')
+        all_players = pickle.load(file_pi2)
+    if exists("data\\team_data.txt"):
+        file_pi2 = open("data\\team_data.txt", 'rb')
+        all_teams = pickle.load(file_pi2)
     return all_players, all_teams
 
 
 def saveData(all_players, all_teams):
-    str_json = json.dumps(all_players, default=lambda o: o.__dict__, indent=4)
-    json_file = open("data\\player_data.json", "w+")
-    json_file.write(str_json)
-    json_file.close()
-    str_json = json.dumps(all_teams, default=lambda o: o.__dict__, indent=4)
-    json_file = open("data\\team_data.json", "w+")
-    json_file.write(str_json)
-    json_file.close()
+    file_pi2 = open("data\\player_data.txt", "wb")
+    pickle.dump(all_players, file_pi2)
+    file_pi2 = open("data\\team_data.txt", "wb")
+    pickle.dump(all_teams, file_pi2)
 
 
 def handleCSV(frame):
+    indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA", "ROUND EVENTS BREAKDOWN"]
     indices_no = []
     frame_depth = []
     unfiltered_frame = pd.read_csv(frame, sep=';')
@@ -59,23 +54,19 @@ def handleCSV(frame):
                                 nrows=indexFrame["Depth"][idx] - 1, engine='python', names=dataframe.iloc[0].values)
         if idx == 0:
             map_overview = dataframe.iloc[:, :-1]
+            map_overview = map_overview.loc[:, map_overview.columns.notnull()]
         elif idx == 1:
             match_performance = dataframe.iloc[:, :-1]
+            match_performance = match_performance.loc[:, match_performance.columns.notnull()]
         elif idx == 2:
             sixth_pick_overview = dataframe.iloc[:, :-1]
+            sixth_pick_overview = sixth_pick_overview.loc[:, sixth_pick_overview.columns.notnull()]
         elif idx == 3:
             player_round_data = dataframe.iloc[:, :-1]
+            player_round_data = player_round_data.loc[:, player_round_data.columns.notnull()]
         elif idx == 4:
             round_event_breakdown = dataframe.iloc[:, :-1]
+            round_event_breakdown = round_event_breakdown.loc[:, round_event_breakdown.columns.notnull()]
 
-    print(map_overview)
-    print(match_performance)
-    print(sixth_pick_overview)
-    print(player_round_data)
-    print(round_event_breakdown)
     csv_frames = [map_overview, match_performance, sixth_pick_overview, player_round_data, round_event_breakdown]
     return csv_frames
-
-def newPlayerData(all_players, csv_frames):
-
-def newTeamData(all_teams, csv_frames):
