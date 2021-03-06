@@ -4,14 +4,20 @@ from os.path import exists
 
 indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA",
            "ROUND EVENTS BREAKDOWN"]
-team_match_columns_names = ["Match ID", "Timestamp", "Gamemode", "Comp Info", "Banned Map", "Banned Op", "Map", "Winner",
-                 "Own Score", "Enemy Score", "Rounds"]
+team_match_columns_names = ["Match ID", "Timestamp", "Gamemode", "Comp Info", "Banned Map", "Banned Op", "Map",
+                            "Outcome",
+                            "Own Score", "Enemy Score", "Rounds"]
 compMaps = ["Clubhouse", "Coastline", "Consulate", "Kafe Dostoyevsky", "Oregon", "Theme Park", "Villa"]
 nonCompMaps = ["Bank", "Border", "Chalet", "Favela", "Fortress", "Hereford Base", "House", "Kanal", "Outback",
                "Presidential Plane", "Skyscraper", "Tower", "Yacht"]
-attOps = ["Sledge", "Thatcher", "Ash", "Thermite", "Montagne", "Twitch", "Blitz", "IQ", "Fuze", "Glaz", "Buck", "Blackbeard", "Capitao", "Hibana", "Jackal", "Ying", "Zofia", "Dokkaebi", "Finka", "Lion", "Maverick", "Nomad", "Gridlock", "Nokk", "Amaru", "Kali", "Iana", "Ace", "Zero", "Flores"]
-defOps = ["Mute", "Smoke", "Castle", "Pulse", "Doc", "Rook", "Jäger", "Bandit", "Tachanka", "Kapkan", "Frost", "Valkyrie", "Caveira", "Echo", "Mira", "Maestro", "Clash", "Kaid", "Mozzie", "Warden", "Goyo", "Wamai", "Oryx", "Melusi", "Aruni"]
+attOps = ["Sledge", "Thatcher", "Ash", "Thermite", "Montagne", "Twitch", "Blitz", "IQ", "Fuze", "Glaz", "Buck",
+          "Blackbeard", "Capitao", "Hibana", "Jackal", "Ying", "Zofia", "Dokkaebi", "Finka", "Lion", "Maverick",
+          "Nomad", "Gridlock", "Nokk", "Amaru", "Kali", "Iana", "Ace", "Zero", "Flores"]
+defOps = ["Mute", "Smoke", "Castle", "Pulse", "Doc", "Rook", "Jäger", "Bandit", "Tachanka", "Kapkan", "Frost",
+          "Valkyrie", "Caveira", "Echo", "Mira", "Maestro", "Clash", "Kaid", "Mozzie", "Warden", "Goyo", "Wamai",
+          "Oryx", "Melusi", "Aruni"]
 noMatchInfoMode = "Scrim"
+
 
 def loadData():
     all_players = []
@@ -26,7 +32,7 @@ def loadData():
 
 
 def saveData(all_players, all_teams):
-    #todo: backup new file if older than x days
+    # todo: backup new file if older than x days
     file_pi2 = open("data\\player_data.txt", "wb")
     pickle.dump(all_players, file_pi2)
     file_pi2 = open("data\\team_data.txt", "wb")
@@ -88,7 +94,7 @@ def getplayerindex(playername, match_performance):
 def getknowndata(all_players, all_teams):
     all_playernames = []
     all_teamnames = []
-    used_gamemode = []
+    used_gamemode = [noMatchInfoMode]
     used_match_info = []
     for player in all_players:
         all_playernames.append(player.name)
@@ -144,10 +150,10 @@ def getmatchinfoinput(used_match_info):
 
 
 def getteaminput(all_teamnames, type):
-    if type=="winner":
-        team_string = "Enter winning team:\n"
-    elif type=="loser":
-        team_string = "Enter losing team:\n"
+    if type == "blue":
+        team_string = "Enter blue team:\n"
+    elif type == "orange":
+        team_string = "Enter  orange team:\n"
     team_string += "Press\t0\tfor new entry\n"
     for idx, team_name in enumerate(all_teamnames):
         team_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(team_name) + "\n"
@@ -177,12 +183,12 @@ def getuserinput(frame, knowndata):
         match_info = getmatchinfoinput(used_match_info)
     else:
         match_info = "None"
-    winner_team = getteaminput(all_teamnames, "winner")
-    loser_team = getteaminput(all_teamnames, "loser")
-    winner_maps = input("1")
-    winner_ops = input("2")
-    loser_maps = input("3")
-    loser_ops = input("4")
+    blue_team = getteaminput(all_teamnames, "blue")
+    orange_team = getteaminput(all_teamnames, "orange")
+    blue_maps = input("1")
+    blue_ops = input("2")
+    orange_maps = input("3")
+    orange_ops = input("4")
 
-    user_input = [gamemode, match_info, winner_team, winner_maps, winner_ops, loser_team, loser_maps, loser_ops]
+    user_input = [gamemode, match_info, blue_team, blue_maps, blue_ops, orange_team, orange_maps, orange_ops]
     return user_input

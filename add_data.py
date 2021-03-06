@@ -1,11 +1,11 @@
 import sys
-import pandas as pd
 import functions as fnc
 import data_structure as ds
 
 
 def main():
     for frame in sys.argv[1:]:
+        input(frame)
         csv_frames = fnc.handleCSV(frame)
 
         match_overview = csv_frames[0]
@@ -14,7 +14,6 @@ def main():
         player_round_data = csv_frames[3]
         round_event_breakdown = csv_frames[4]
 
-
         all_players, all_teams = fnc.loadData()
         knowndata = fnc.getknowndata(all_players, all_teams)
         all_playernames = knowndata[0]
@@ -22,25 +21,22 @@ def main():
         used_gamemode = knowndata[2]
         used_match_info = knowndata[3]
         input_correct = False
-        while not(input_correct):
+        while not (input_correct):
             user_input = fnc.getuserinput(frame, knowndata)
-            confirm = input("Input correct?\t confirm by y")
+            confirm = input("Input correct?\t confirm by y\n")
             if confirm == "y":
                 input_correct = True
 
-        winner_team = user_input[2]
-        loser_team = user_input[5]
+        blue_team = user_input[2]
+        orange_team = user_input[5]
 
-
-        if not (winner_team in all_teamnames):
-            all_teams.append(ds.Team(winner_team))
-        if not (loser_team in all_teamnames):
-            all_teams.append(ds.Team(loser_team))
+        if not (blue_team in all_teamnames):
+            all_teams.append(ds.Team(blue_team))
+        if not (orange_team in all_teamnames):
+            all_teams.append(ds.Team(orange_team))
         for team in all_teams:
-            if team.name == winner_team:
-                team.addMatch(match_overview, user_input)
-            if team.name == loser_team:
-                team.addMatch(match_overview, user_input)
+            if team.name in [blue_team, orange_team]:
+                team.addMatch(match_overview, player_round_data, user_input)
 
         for player_name in match_performance.Player.values:
             if not (player_name in all_playernames):
@@ -50,6 +46,7 @@ def main():
                 for player in all_players:
                     if player.name == player_name:
                         player.addMatch(player_name, match_overview, match_performance)
+
 
         fnc.saveData(all_players, all_teams)
 
