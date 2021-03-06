@@ -1,6 +1,7 @@
 import pandas as pd
+import numpy as np
 
-frame = 'data/2021-02-23_Villa_8-4.csv'
+frame = '2021-02-23_Kafe Dostoyevsky_8-4.csv'
 
 indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA", "ROUND EVENTS BREAKDOWN"]
 indices_no = []
@@ -51,21 +52,31 @@ def getplayerindex(playername, match_performance):
     return match_performance.Player[match_performance.Player == playername].index[0]
 
 
-filterd_overview = match_overview.iloc[0].drop(
-    ["Team 1", "Team 2", "Team 1 Score", "Team 2 Score", "ATK at Start", "Team 1 ATK Wins", "Team 1 DEF Wins",
-     "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half"])
-filterd_performance = match_performance.iloc[match_performance.Player[match_performance.Player == "MikeAlpaX.NGNS"].index[0]]
-filterd_performance = filterd_performance.drop(
-    ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff.", "HS%", "ATK Op", "DEF Op", "In-game Points"])
-if filterd_overview["Winner"] == filterd_performance["Team"]:
-    filterd_overview["Winner"] = True
-else:
-    filterd_overview["Winner"] = False
-filterd_data = pd.concat([filterd_overview, filterd_performance.drop("Team")])
-print(filterd_data)
 
-# print(match_performance)
-# print(match_performance)
+
+filterd_data = player_round_data.loc[player_round_data["Team"] == "Blue"]
+filterd_data = filterd_data.loc[filterd_data["Player"] == filterd_data["Player"].values[0]]
+
+filterd_data["Round"] = pd.to_numeric(filterd_data["Round"], downcast='integer')
+filterd_data = filterd_data.set_index("Round")
+for idx, type in enumerate(filterd_data["Victory Type"].values):
+    if type == "Time Limit Reached":
+        if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
+            filterd_data.loc[idx+1, "Victory Type"] = "Time Limit Reached"
+        else:
+            filterd_data.loc[idx+1, "Victory Type"] = "Team Killed"
+
+round_data = filterd_data.drop(
+    ["Match ID", "Team", "Player", "Map", "Round Time (ms)", "Operator", "Time Spent Alive (ms)", "Kills", "Refrags",
+     "Headshots",
+     "Underdog Kills", "1vX", "Death", "Traded Death", "Refragged By", "Traded by Enemy", "Opening Kill",
+     "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
+     "Teamkilled", "In-game Points"], axis='columns')
+
+
+filterd_data = player_round_data.loc[player_round_data["Team"] == "Orange"]
+print(filterd_data["Player"].values[0])
+input(round_data)
 # print(sixth_pick_overview)
 # print(player_round_data)
 # print(round_event_breakdown)
