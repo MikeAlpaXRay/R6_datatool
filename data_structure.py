@@ -68,7 +68,7 @@ class Team:
                 own_score = max(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
                 enemy_score = min(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
             else:
-                round_data = self.getRoundData(player_round_data,"Orange")
+                round_data = self.getRoundData(player_round_data, "Orange")
                 banned_maps = orange_maps
                 banned_ops = orange_ops
                 own_score = min(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
@@ -88,8 +88,8 @@ class Team:
 
         filterd_data["Round"] = pd.to_numeric(filterd_data["Round"], downcast='integer')
         filterd_data = filterd_data.set_index("Round")
-        for idx, type in enumerate(filterd_data["Victory Type"].values):
-            if type == "Time Limit Reached":
+        for idx, end_type in enumerate(filterd_data["Victory Type"].values):
+            if end_type == "Time Limit Reached":
                 if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
                     filterd_data.loc[idx + 1, "Victory Type"] = "Time Limit Reached"
                 else:

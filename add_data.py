@@ -29,18 +29,20 @@ def main():
 
             map_string = ""
             for data in user_input[3]:
-                map_string +="\t\t\t\t" + str(data) + "\n"
+                map_string += "\t\t\t\t" + str(data) + "\n"
             op_string = ""
             for data in user_input[4]:
-                op_string +="\t\t\t\t" + str(data) + "\n"
-            print("Team 1: " + str(user_input[2]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
+                op_string += "\t\t\t\t" + str(data) + "\n"
+            print(
+                "Team 1: " + str(user_input[2]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
             map_string = ""
             for data in user_input[6]:
-                map_string +="\t\t\t\t" + str(data) + "\n"
+                map_string += "\t\t\t\t" + str(data) + "\n"
             op_string = ""
             for data in user_input[7]:
-                op_string +="\t\t\t\t" + str(data) + "\n"
-            print("Team 2: " + str(user_input[5]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
+                op_string += "\t\t\t\t" + str(data) + "\n"
+            print(
+                "Team 2: " + str(user_input[5]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
             confirm = input("Input correct?\t Press y to confirm...\n")
             if confirm == "y":
                 input_correct = True
