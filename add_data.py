@@ -10,9 +10,9 @@ def main():
 
         match_overview = csv_frames[0]
         match_performance = csv_frames[1]
-        sixth_pick_overview = csv_frames[2]
+        # sixth_pick_overview = csv_frames[2]
         player_round_data = csv_frames[3]
-        round_event_breakdown = csv_frames[4]
+        # round_event_breakdown = csv_frames[4]
 
         all_players, all_teams = fnc.loadData()
         knowndata = fnc.getknowndata(all_players, all_teams)
@@ -20,10 +20,28 @@ def main():
         all_teamnames = knowndata[1]
         used_gamemode = knowndata[2]
         used_match_info = knowndata[3]
+
         input_correct = False
-        while not (input_correct):
+        user_input = []
+        while not input_correct:
             user_input = fnc.getuserinput(frame, knowndata)
-            confirm = input("Input correct?\t confirm by y\n")
+            print("Matchdata: " + str(user_input[0]) + " | Remarks:\t" + str(user_input[1]) + "\n")
+
+            map_string = ""
+            for data in user_input[3]:
+                map_string +="\t\t\t\t" + str(data) + "\n"
+            op_string = ""
+            for data in user_input[4]:
+                op_string +="\t\t\t\t" + str(data) + "\n"
+            print("Team 1: " + str(user_input[2]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
+            map_string = ""
+            for data in user_input[6]:
+                map_string +="\t\t\t\t" + str(data) + "\n"
+            op_string = ""
+            for data in user_input[7]:
+                op_string +="\t\t\t\t" + str(data) + "\n"
+            print("Team 2: " + str(user_input[5]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
+            confirm = input("Input correct?\t Press y to confirm...\n")
             if confirm == "y":
                 input_correct = True
 
@@ -47,7 +65,7 @@ def main():
                     if player.name == player_name:
                         player.addMatch(player_name, match_overview, match_performance)
 
-
         fnc.saveData(all_players, all_teams)
+
 
 main()

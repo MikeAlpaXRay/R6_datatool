@@ -1,22 +1,9 @@
+import os
+import time
 import pandas as pd
 import pickle
 from os.path import exists
-
-indices = ["MATCH OVERVIEW", "MATCH PERFORMANCE", "SIXTH PICK OVERVIEW", "PLAYER ROUNDS DATA",
-           "ROUND EVENTS BREAKDOWN"]
-team_match_columns_names = ["Match ID", "Timestamp", "Gamemode", "Comp Info", "Banned Map", "Banned Op", "Map",
-                            "Outcome",
-                            "Own Score", "Enemy Score", "Rounds"]
-compMaps = ["Clubhouse", "Coastline", "Consulate", "Kafe Dostoyevsky", "Oregon", "Theme Park", "Villa"]
-nonCompMaps = ["Bank", "Border", "Chalet", "Favela", "Fortress", "Hereford Base", "House", "Kanal", "Outback",
-               "Presidential Plane", "Skyscraper", "Tower", "Yacht"]
-attOps = ["Sledge", "Thatcher", "Ash", "Thermite", "Montagne", "Twitch", "Blitz", "IQ", "Fuze", "Glaz", "Buck",
-          "Blackbeard", "Capitao", "Hibana", "Jackal", "Ying", "Zofia", "Dokkaebi", "Finka", "Lion", "Maverick",
-          "Nomad", "Gridlock", "Nokk", "Amaru", "Kali", "Iana", "Ace", "Zero", "Flores"]
-defOps = ["Mute", "Smoke", "Castle", "Pulse", "Doc", "Rook", "Jäger", "Bandit", "Tachanka", "Kapkan", "Frost",
-          "Valkyrie", "Caveira", "Echo", "Mira", "Maestro", "Clash", "Kaid", "Mozzie", "Warden", "Goyo", "Wamai",
-          "Oryx", "Melusi", "Aruni"]
-noMatchInfoMode = "Scrim"
+import user_constants as uc
 
 
 def loadData():
@@ -32,11 +19,30 @@ def loadData():
 
 
 def saveData(all_players, all_teams):
-    # todo: backup new file if older than x days
-    file_pi2 = open("data\\player_data.txt", "wb")
-    pickle.dump(all_players, file_pi2)
-    file_pi2 = open("data\\team_data.txt", "wb")
-    pickle.dump(all_teams, file_pi2)
+    if exists("data\\player_data.txt") and exists("data\\team_data.txt"):
+        x = os.stat("data\\player_data.txt")
+        y = os.stat("data\\team_data.txt")
+        last_updated = (time.time() - max(x, y).st_mtime)
+        if last_updated > uc.DaysToBackup * 24 * 60 * 60:
+            old_all_players, old_all_teams = loadData()
+            file_pi2 = open("data\\player_data_backup.txt", "wb")
+            pickle.dump(old_all_players, file_pi2)
+            file_pi2 = open("data\\team_data_backup.txt", "wb")
+            pickle.dump(old_all_teams, file_pi2)
+            file_pi2 = open("data\\player_data.txt", "wb")
+            pickle.dump(all_players, file_pi2)
+            file_pi2 = open("data\\team_data.txt", "wb")
+            pickle.dump(all_teams, file_pi2)
+        else:
+            file_pi2 = open("data\\player_data.txt", "wb")
+            pickle.dump(all_players, file_pi2)
+            file_pi2 = open("data\\team_data.txt", "wb")
+            pickle.dump(all_teams, file_pi2)
+    else:
+        file_pi2 = open("data\\player_data.txt", "wb")
+        pickle.dump(all_players, file_pi2)
+        file_pi2 = open("data\\team_data.txt", "wb")
+        pickle.dump(all_teams, file_pi2)
 
 
 def handleCSV(frame):
@@ -47,7 +53,7 @@ def handleCSV(frame):
 
     for row_no in range(0, row_count):
         row_content = unfiltered_frame.iloc[row_no, 0]
-        for name in indices:
+        for name in uc.indices:
             if name in row_content:
                 indices_no.append(row_no)
 
@@ -58,10 +64,10 @@ def handleCSV(frame):
         else:
             frame_depth.append(row_count - x - 2)
 
-    indexFrame = pd.DataFrame(list(zip(indices, indices_no, frame_depth)),
+    indexFrame = pd.DataFrame(list(zip(uc.indices, indices_no, frame_depth)),
                               columns=['Name', 'Index', 'Depth'])
 
-    for idx, name in enumerate(indices):
+    for idx, name in enumerate(uc.indices):
         dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx],
                                 nrows=indexFrame["Depth"][idx],
                                 engine='python')
@@ -94,7 +100,7 @@ def getplayerindex(playername, match_performance):
 def getknowndata(all_players, all_teams):
     all_playernames = []
     all_teamnames = []
-    used_gamemode = [noMatchInfoMode]
+    used_gamemode = [uc.noMatchInfoMode]
     used_match_info = []
     for player in all_players:
         all_playernames.append(player.name)
@@ -116,12 +122,12 @@ def getgamemodeinput(used_gamemode):
         gamemode_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(gamemode) + "\n"
 
     input_valid = False
-    while not (input_valid):
+    while not input_valid:
         gamemode = input(gamemode_string)
         if gamemode.isdigit() and int(gamemode) in range(len(used_gamemode) + 1):
             input_valid = True
             if gamemode == "0":
-                gamemode = input("New Entry...\n")
+                gamemode = input("New gamemode...\n")
             else:
                 gamemode = used_gamemode[int(gamemode) - 1]
         else:
@@ -136,12 +142,12 @@ def getmatchinfoinput(used_match_info):
         match_info_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(match_info) + "\n"
 
     input_valid = False
-    while not (input_valid):
+    while not input_valid:
         match_info = input(match_info_string)
         if match_info.isdigit() and int(match_info) in range(len(used_match_info) + 1):
             input_valid = True
             if match_info == "0":
-                match_info = input("New Entry...\n")
+                match_info = input("New matchinfo...\n")
             else:
                 match_info = used_match_info[int(match_info) - 1]
         else:
@@ -149,21 +155,21 @@ def getmatchinfoinput(used_match_info):
     return match_info
 
 
-def getteaminput(all_teamnames, type):
-    if type == "blue":
+def getteaminput(all_teamnames, team):
+    if team == "blue":
         team_string = "Enter blue team:\n"
-    elif type == "orange":
+    elif team == "orange":
         team_string = "Enter  orange team:\n"
     team_string += "Press\t0\tfor new entry\n"
     for idx, team_name in enumerate(all_teamnames):
         team_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(team_name) + "\n"
     input_valid = False
-    while not (input_valid):
+    while not input_valid:
         team = input(team_string)
         if team.isdigit() and int(team) in range(len(all_teamnames) + 1):
             input_valid = True
             if team == "0":
-                team = input("New Entry...\n")
+                team = input("New team...\n")
             else:
                 team = all_teamnames[int(team) - 1]
         else:
@@ -171,24 +177,94 @@ def getteaminput(all_teamnames, type):
     return team
 
 
+def getopbanninput(team):
+    if team == "blue":
+        team_string = "Blue banned...:\n"
+    elif team == "orange":
+        team_string = "Orange banned:\n"
+    for idx, team_name in enumerate(uc.attOps):
+        team_string += "Press\t" + str(idx) + "\tfor\t" + str(team_name) + "\n"
+    input_valid = False
+    while not input_valid:
+        ops = input(team_string)
+        if ops.isdigit() and int(ops) in range(len(uc.attOps) + 1):
+            input_valid = True
+            attban = uc.attOps[int(ops)]
+        else:
+            print("Enter correct number")
+    if team == "blue":
+        team_string = "\nBlue banned...:\n"
+    elif team == "orange":
+        team_string = "\nOrange banned:\n"
+    for idx, team_name in enumerate(uc.defOps):
+        team_string += "Press\t" + str(idx) + "\tfor\t" + str(team_name) + "\n"
+    input_valid = False
+    while not input_valid:
+        team = input(team_string)
+        if team.isdigit() and int(team) in range(len(uc.defOps) + 1):
+            input_valid = True
+            defban = uc.defOps[int(team)]
+        else:
+            print("Enter correct number")
+
+    return [attban, defban]
+
+
+def getmapbanninput(team, pool="comp"):
+    banned_maps = []
+    if team == "blue":
+        team_string = "Blue banned...:\n"
+    elif team == "orange":
+        team_string = "Orange banned:\n"
+    team_string += "Press\t0\tto continue\n"
+    if not (pool == "comp"):
+        map_pool = uc.nonCompMaps
+    else:
+        map_pool = uc.compMaps
+    for idx, map_name in enumerate(map_pool):
+        team_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(map_name) + "\n"
+    if pool == "comp":
+        team_string += "Press\t" + str(len(map_pool) + 1) + "\tfor\tother mappool\n"
+
+    input_valid = False
+    while not input_valid:
+        maps = input(team_string)
+        if maps.isdigit() and int(maps) in range(len(map_pool) + 2):
+            if maps == "0":
+                input_valid = True
+            elif maps == str(len(map_pool) + 1):
+                maps = getmapbanninput(team, pool="nonComp")
+                banned_maps.append(maps)
+            else:
+                maps = map_pool[int(maps) - 1]
+                banned_maps.append(maps)
+        else:
+            print("Enter correct number")
+    return banned_maps
+
+
 def getuserinput(frame, knowndata):
     all_teamnames = knowndata[1]
     used_gamemode = knowndata[2]
     used_match_info = knowndata[3]
 
-    print(frame)
-
     gamemode = getgamemodeinput(used_gamemode)
-    if not (gamemode == noMatchInfoMode):
+    if not (gamemode == uc.noMatchInfoMode):
         match_info = getmatchinfoinput(used_match_info)
     else:
         match_info = "None"
     blue_team = getteaminput(all_teamnames, "blue")
     orange_team = getteaminput(all_teamnames, "orange")
-    blue_maps = input("1")
-    blue_ops = input("2")
-    orange_maps = input("3")
-    orange_ops = input("4")
+
+    if not (gamemode == uc.noMatchInfoMode):
+        blue_maps = getmapbanninput("blue", pool="comp")
+        orange_maps = getmapbanninput("orange", pool="comp")
+    else:
+        blue_maps = ""
+        orange_maps = ""
+
+    blue_ops = getopbanninput("blue")
+    orange_ops = getopbanninput("orange")
 
     user_input = [gamemode, match_info, blue_team, blue_maps, blue_ops, orange_team, orange_maps, orange_ops]
     return user_input

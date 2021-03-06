@@ -31,7 +31,7 @@ class Player:
 class Team:
     def __init__(self, name):
         self.name = name
-        self.matches = pd.DataFrame(columns=fnc.team_match_columns_names)
+        self.matches = pd.DataFrame(columns=fnc.uc.team_match_columns_names)
 
     def addMatch(self, match_overview, player_round_data, user_input):
         mo = match_overview
@@ -76,7 +76,7 @@ class Team:
 
             data = [mo["Match ID"][0], mo["Timestamp"][0], gamemode, match_info, banned_maps, banned_ops, mo["Map"][0],
                     outcome, own_score, enemy_score, round_data]
-            self.matches = self.matches.append(pd.DataFrame([data], columns=fnc.team_match_columns_names))
+            self.matches = self.matches.append(pd.DataFrame([data], columns=fnc.uc.team_match_columns_names))
 
         else:
             print("Matchdata already added")
