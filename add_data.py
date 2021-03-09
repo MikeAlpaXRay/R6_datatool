@@ -44,7 +44,7 @@ def main():
             print(
                 "Team 2: " + str(user_input[5]) + "\n\tBanned:\n\t\tMaps:\n" + map_string + "\n\t\tOps:\n" + op_string)
             confirm = input("Input correct?\t Press y to confirm...\n")
-            if confirm == "y":
+            if confirm == "y" or confirm == "Y":
                 input_correct = True
 
         blue_team = user_input[2]
@@ -68,6 +68,7 @@ def main():
                         player.addMatch(player_name, match_overview, match_performance)
 
         fnc.saveData(all_players, all_teams)
+
 
 
 main()

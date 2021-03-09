@@ -1,6 +1,7 @@
+import time
 import pandas as pd
 import functions as fnc
-import time
+import user_constants as uc
 
 
 class Player:
@@ -9,10 +10,12 @@ class Player:
         self.matches = pd.DataFrame()
 
     def addMatch(self, playername, match_overview, match_performance):
+
         filterd_overview = match_overview.iloc[0].drop(
             ["Team 1", "Team 2", "Team 1 Score", "Team 2 Score", "ATK at Start", "Team 1 ATK Wins", "Team 1 DEF Wins",
-             "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half"])
-        filterd_performance = match_performance.iloc[fnc.getplayerindex(playername, match_performance)]
+             "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half", "Team 2 Score at Half"])
+        filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
+
         filterd_performance = filterd_performance.drop(
             ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff.", "HS%", "ATK Op", "DEF Op",
              "In-game Points"])
@@ -35,7 +38,7 @@ class Team:
 
     def addMatch(self, match_overview, player_round_data, user_input):
         mo = match_overview
-        if not (mo["Match ID"][0] in self.matches["Match ID"].values):
+        if not (mo["Match ID"].values[0] in self.matches["Match ID"].values):
             gamemode = user_input[0]
             match_info = user_input[1]
             blue_team = user_input[2]
@@ -45,10 +48,10 @@ class Team:
             orange_maps = user_input[6]
             orange_ops = user_input[7]
 
-            if mo["Team 1 Score"][0] == mo["Team 2 Score"][0]:
+            if mo["Team 1 Score"].values[0] == mo["Team 2 Score"].values[0]:
                 outcome = "Draw"
             else:
-                outcome = mo["Winner"][0]
+                outcome = mo["Winner"].values[0]
             if not (outcome == "Draw"):
                 if self.name == blue_team:
                     if outcome == "Blue":
@@ -65,16 +68,16 @@ class Team:
                 round_data = self.getRoundData(player_round_data, "Blue")
                 banned_maps = blue_maps
                 banned_ops = blue_ops
-                own_score = max(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
-                enemy_score = min(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
+                own_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+                enemy_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
             else:
                 round_data = self.getRoundData(player_round_data, "Orange")
                 banned_maps = orange_maps
                 banned_ops = orange_ops
-                own_score = min(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
-                enemy_score = max(mo["Team 1 Score"][0], mo["Team 2 Score"][0])
+                own_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+                enemy_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
 
-            data = [mo["Match ID"][0], mo["Timestamp"][0], gamemode, match_info, banned_maps, banned_ops, mo["Map"][0],
+            data = [mo["Match ID"].values[0], mo["Timestamp"].values[0], gamemode, match_info, banned_maps, banned_ops, mo["Map"].values[0],
                     outcome, own_score, enemy_score, round_data]
             self.matches = self.matches.append(pd.DataFrame([data], columns=fnc.uc.team_match_columns_names))
 
@@ -82,12 +85,10 @@ class Team:
             print("Matchdata already added")
             time.sleep(5)
 
-    def getRoundData(self, player_round_data, Team):
-        filterd_data = player_round_data.loc[player_round_data["Team"] == Team]
-        filterd_data = filterd_data.loc[filterd_data["Player"] == filterd_data["Player"].values[0]]
-
-        filterd_data["Round"] = pd.to_numeric(filterd_data["Round"], downcast='integer')
-        filterd_data = filterd_data.set_index("Round")
+    def getRoundData(self, player_round_data, team):
+        filterd_team_data = player_round_data.loc[player_round_data["Team"] == team]
+        filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
+        filterd_data = filterd_data.astype({"Round": 'int'}).set_index("Round")
         for idx, end_type in enumerate(filterd_data["Victory Type"].values):
             if end_type == "Time Limit Reached":
                 if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
@@ -101,5 +102,22 @@ class Team:
              "Headshots",
              "Underdog Kills", "1vX", "Death", "Traded Death", "Refragged By", "Traded by Enemy", "Opening Kill",
              "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
-             "Teamkilled", "In-game Points"], axis='columns')
+             "Teamkilled", "In-game Points", "Unnamed: 31"], axis='columns')
+
+        # op_data = []
+        # if filterd_team_data["Player"].values[0] in uc.playerNames:
+        #     test_frame = pd.DataFrame([], index=uc.playerNames, columns=["Operator"])
+        #     test_frame.index.name = "Player"
+        #     round_data["Operator"] = ""
+        #     for round in filterd_team_data["Round"].values:
+        #         test = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
+        #         for player in uc.playerNames:
+        #             if player in test["Player"].values:
+        #                 op = test.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
+        #                 test_frame._set_value(player, "Operator", op)
+        #         test_frame = test_frame.dropna()
+        #
+        #         op_data.append([test_frame])
+        #         round_data.loc[round, "Operator"] = test_frame
+        input(round_data)
         return round_data
