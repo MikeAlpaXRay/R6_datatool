@@ -1,6 +1,8 @@
 import os
 import time
+import csv
 import pandas as pd
+import numpy as np
 import pickle
 from os.path import exists
 import user_constants as uc
@@ -46,50 +48,38 @@ def saveData(all_players, all_teams):
 
 
 def handleCSV(frame):
-    indices_no = []
-    frame_depth = []
-    unfiltered_frame = pd.read_csv(frame, sep=';')
-    row_count = unfiltered_frame.shape[0]
+    with open(frame, 'r') as read_obj:
+        frame_reader = csv.reader(read_obj)
 
-    for row_no in range(0, row_count):
-        row_content = unfiltered_frame.iloc[row_no, 0]
-        for name in uc.indices:
-            if name in row_content:
-                indices_no.append(row_no)
+        indices_no = []
+        frame_depth = []
+        for idx, row in enumerate(frame_reader):
+            for indice in uc.indices:
+                if indice in row:
+                    indices_no.append(idx)
+        indices_no.append(idx)
+        frame_depth = [indices_no[n] - indices_no[n - 1] - 3 for n in range(1, len(indices_no))]
 
-    for idx, x in enumerate(indices_no):
-        indices_no[idx] = x + 2
-        if not (idx + 1 == len(indices_no)):
-            frame_depth.append(indices_no[idx + 1] - x - 2)
-        else:
-            frame_depth.append(row_count - x - 2)
+        index_frame = pd.DataFrame(list(zip(uc.indices, indices_no, frame_depth)), columns=['Name', 'Index', 'Depth'])
 
-    indexFrame = pd.DataFrame(list(zip(uc.indices, indices_no, frame_depth)),
-                              columns=['Name', 'Index', 'Depth'])
-
-    for idx, name in enumerate(uc.indices):
-        dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx],
-                                nrows=indexFrame["Depth"][idx],
-                                engine='python')
-        dataframe = pd.read_csv(frame, sep='\,', header=None, skiprows=indexFrame["Index"][idx] + 1,
-                                nrows=indexFrame["Depth"][idx] - 1, engine='python', names=dataframe.iloc[0].values)
+    for idx, name in enumerate(index_frame.Name.values):
         if idx == 0:
-            map_overview = dataframe.iloc[:, :-1]
-            map_overview = map_overview.loc[:, map_overview.columns.notnull()]
+            match_overview = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+                                         nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 1:
-            match_performance = dataframe.iloc[:, :-1]
-            match_performance = match_performance.loc[:, match_performance.columns.notnull()]
+            match_performance = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+                                            nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 2:
-            sixth_pick_overview = dataframe.iloc[:, :-1]
-            sixth_pick_overview = sixth_pick_overview.loc[:, sixth_pick_overview.columns.notnull()]
+            sixth_pick_overview = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+                                              nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 3:
-            player_round_data = dataframe.iloc[:, :-1]
-            player_round_data = player_round_data.loc[:, player_round_data.columns.notnull()]
+            player_round_data = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+                                            nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 4:
-            round_event_breakdown = dataframe.iloc[:, :-1]
-            round_event_breakdown = round_event_breakdown.loc[:, round_event_breakdown.columns.notnull()]
+            round_event_breakdown = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+                                                nrows=index_frame["Depth"][idx], engine='python')
 
-    csv_frames = [map_overview, match_performance, sixth_pick_overview, player_round_data, round_event_breakdown]
+    csv_frames = [match_overview, match_performance, sixth_pick_overview, player_round_data, round_event_breakdown]
     return csv_frames
 
 
@@ -179,28 +169,41 @@ def getteaminput(all_teamnames, team):
 
 def getopbanninput(team):
     if team == "blue":
-        team_string = "Blue banned...:\n"
+        op_string = "Blue banned...:\n"
     elif team == "orange":
-        team_string = "Orange banned:\n"
-    for idx, team_name in enumerate(uc.attOps):
-        team_string += "Press\t" + str(idx) + "\tfor\t" + str(team_name) + "\n"
+        op_string = "Orange banned:\n"
+    for idx, op_name in enumerate(uc.attOps):
+        op_string += "Press\t" + str(idx) + "\tfor\t" + str(op_name)
+        if not(len(str(op_name))) > 7:
+            op_string += "\t|\t"
+        else:
+            op_string += "|\t"
+        if (idx % 2) == 0:
+            op_string += "\n"
     input_valid = False
     while not input_valid:
-        ops = input(team_string)
+        ops = input(op_string)
         if ops.isdigit() and int(ops) in range(len(uc.attOps) + 1):
             input_valid = True
             attban = uc.attOps[int(ops)]
         else:
             print("Enter correct number")
     if team == "blue":
-        team_string = "\nBlue banned...:\n"
+        op_string = "\nBlue banned...:\n"
     elif team == "orange":
-        team_string = "\nOrange banned:\n"
-    for idx, team_name in enumerate(uc.defOps):
-        team_string += "Press\t" + str(idx) + "\tfor\t" + str(team_name) + "\n"
+        op_string = "\nOrange banned:\n"
+    for idx, op_name in enumerate(uc.defOps):
+        op_string += "Press\t" + str(idx) + "\tfor\t" + str(op_name)
+        if not(len(str(op_name))) > 7:
+            op_string += "\t|\t"
+        else:
+            op_string += "|\t"
+        if (idx % 2) == 0:
+            op_string += "\n"
+
     input_valid = False
     while not input_valid:
-        team = input(team_string)
+        team = input(op_string)
         if team.isdigit() and int(team) in range(len(uc.defOps) + 1):
             input_valid = True
             defban = uc.defOps[int(team)]
