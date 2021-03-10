@@ -13,6 +13,6 @@ defOps = ["noBan", "Mute", "Smoke", "Castle", "Pulse", "Doc", "Rook", "Jäger", 
           "Valkyrie", "Caveira", "Echo", "Mira", "Maestro", "Clash", "Kaid", "Mozzie", "Warden", "Goyo", "Wamai",
           "Oryx", "Melusi", "Aruni"]
 playerNames = ["Crowdsurfr.NGNS", "Jojo.NGNS", "memez.NGNS", "MikeAlpaX.NGNS", "Montezuma.NGNS", "Pran.NGNS",
-               "ttheo.NGNS", "Yplaing.NGNS"]
+               "ttheo.NGNS", "Yplaying.NGNS"]
 noMatchInfoMode = "Scrim"
 DaysToBackup = 10

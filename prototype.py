@@ -80,20 +80,22 @@ playerNames = ["Crowdsurfr.NGNS", "Jojo.NGNS", "memez.NGNS", "MikeAlpaX.NGNS", "
 
 
 
-filterd_data = player_round_data.loc[player_round_data["Team"] == "Orange"]
-test_frame = pd.DataFrame([], index=playerNames, columns=["Operator"])
-test_frame.index.name = "Player"
-filterd_data = player_round_data.loc[player_round_data["Team"] == "Orange"]
-if filterd_data["Player"].values[0] in playerNames:
-    for round in filterd_data["Round"].values:
-        test = filterd_data.loc[filterd_data["Round"] == int(round)]
+filterd_team_data = player_round_data.loc[player_round_data["Team"] == "Orange"]
+if filterd_team_data["Player"].values[0] in playerNames:
+    op_data = []
+    round_op_data = pd.DataFrame([], index=playerNames, columns=["Operator"])
+    round_op_data.index.name = "Player"
+    for round in list(set(filterd_team_data["Round"].values)):
+        test = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
         for player in playerNames:
             if player in test["Player"].values:
-                op = test.loc[filterd_data["Player"] == player]["Operator"].values[0]
-                test_frame._set_value(player, "Operator", op)
-        test_frame = test_frame.dropna()
-        print(round)
-        input(test_frame)
+                op = test.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
+                round_op_data._set_value(player, "Operator", op)
+            round_op_data = round_op_data.dropna()
+        op_data.append(round_op_data)
+
+    round_data["Operatorstats"] = op_data
+
 
 input("doof")
 

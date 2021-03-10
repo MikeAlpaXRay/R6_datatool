@@ -76,9 +76,9 @@ class Team:
                 banned_ops = orange_ops
                 own_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
                 enemy_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+            data = [mo["Match ID"].values[0], mo["Timestamp"].values[0], gamemode, match_info, banned_maps, banned_ops,
+                    mo["Map"].values[0], outcome, own_score, enemy_score, round_data]
 
-            data = [mo["Match ID"].values[0], mo["Timestamp"].values[0], gamemode, match_info, banned_maps, banned_ops, mo["Map"].values[0],
-                    outcome, own_score, enemy_score, round_data]
             self.matches = self.matches.append(pd.DataFrame([data], columns=fnc.uc.team_match_columns_names))
 
         else:
@@ -104,20 +104,19 @@ class Team:
              "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
              "Teamkilled", "In-game Points", "Unnamed: 31"], axis='columns')
 
-        # op_data = []
-        # if filterd_team_data["Player"].values[0] in uc.playerNames:
-        #     test_frame = pd.DataFrame([], index=uc.playerNames, columns=["Operator"])
-        #     test_frame.index.name = "Player"
-        #     round_data["Operator"] = ""
-        #     for round in filterd_team_data["Round"].values:
-        #         test = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
-        #         for player in uc.playerNames:
-        #             if player in test["Player"].values:
-        #                 op = test.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
-        #                 test_frame._set_value(player, "Operator", op)
-        #         test_frame = test_frame.dropna()
-        #
-        #         op_data.append([test_frame])
-        #         round_data.loc[round, "Operator"] = test_frame
+        if filterd_team_data["Player"].values[0] in uc.playerNames:
+            op_data = []
+            round_op_data = pd.DataFrame([], index=uc.playerNames, columns=["Operator"])
+            round_op_data.index.name = "Player"
+            for round in list(set(filterd_team_data["Round"].values)):
+                test = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
+                for player in uc.playerNames:
+                    if player in test["Player"].values:
+                        op = test.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
+                        round_op_data._set_value(player, "Operator", op)
+                    round_op_data = round_op_data.dropna()
+                op_data.append(round_op_data)
+
+            round_data["Operatorstats"] = op_data
         input(round_data)
         return round_data
