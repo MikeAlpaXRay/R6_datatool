@@ -118,5 +118,4 @@ class Team:
                 op_data.append(round_op_data)
 
             round_data["Operatorstats"] = op_data
-        input(round_data)
         return round_data
