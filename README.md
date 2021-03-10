@@ -6,7 +6,7 @@ Goal to enable datasience not based on Excel
 <h2>Datastructure</h2>
 Data is saved in two files. player data and team data respectively.
 
-<h3>Playerdata</h3>
+<h3>Playerdata (once per Player in Match)</h3>
 
 - name (string)
 - matches (Pandas Dataframe)
@@ -38,7 +38,7 @@ Data is saved in two files. player data and team data respectively.
   - Teamkills
   - Teamkilled
     
-<h3>Teamobject</h3>
+<h3>Teamobject (once per Team in Match)</h3>
 
 - name (string)
 - matches (Pandas Dataframe)
@@ -58,6 +58,6 @@ Data is saved in two files. player data and team data respectively.
     - Side
     - Result
     - Victory Type
-    - _Operatorstats (Pandas Dataframe)
-      - Player
-      - Operator_
+    - _Operatorstats (Pandas Dataframe)_
+      - _Player_
+      - _Operator_
