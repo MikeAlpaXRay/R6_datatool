@@ -70,13 +70,15 @@ def handleCSV(frame):
             match_performance = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
                                             nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 2:
-            sixth_pick_overview = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+            sixth_pick_overview = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx],
+                                              skiprows=1,
                                               nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 3:
             player_round_data = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
                                             nrows=index_frame["Depth"][idx], engine='python')
         elif idx == 4:
-            round_event_breakdown = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx], skiprows=1,
+            round_event_breakdown = pd.read_csv(frame, index_col=0, sep='\,', header=index_frame["Index"][idx],
+                                                skiprows=1,
                                                 nrows=index_frame["Depth"][idx], engine='python')
 
     csv_frames = [match_overview, match_performance, sixth_pick_overview, player_round_data, round_event_breakdown]
@@ -174,7 +176,7 @@ def getopbanninput(team):
         op_string = "Orange banned:\n"
     for idx, op_name in enumerate(uc.attOps):
         op_string += "Press\t" + str(idx) + "\tfor\t" + str(op_name)
-        if not(len(str(op_name))) > 7:
+        if not (len(str(op_name))) > 7:
             op_string += "\t|\t"
         else:
             op_string += "|\t"
@@ -194,7 +196,7 @@ def getopbanninput(team):
         op_string = "\nOrange banned:\n"
     for idx, op_name in enumerate(uc.defOps):
         op_string += "Press\t" + str(idx) + "\tfor\t" + str(op_name)
-        if not(len(str(op_name))) > 7:
+        if not (len(str(op_name))) > 7:
             op_string += "\t|\t"
         else:
             op_string += "|\t"
@@ -215,15 +217,22 @@ def getopbanninput(team):
 
 def getmapbanninput(team, pool="comp"):
     banned_maps = []
+    if pool == "comp":
+        comp_pool = True
+    else:
+        comp_pool = False
     if team == "blue":
         team_string = "Blue banned...:\n"
     elif team == "orange":
         team_string = "Orange banned:\n"
-    team_string += "Press\t0\tto continue\n"
-    if not (pool == "comp"):
-        map_pool = uc.nonCompMaps
+    if comp_pool:
+        team_string += "Press\t0\tto continue\n"
     else:
+        team_string += "Press\t0\tto other maps\n"
+    if comp_pool:
         map_pool = uc.compMaps
+    else:
+        map_pool = uc.nonCompMaps
     for idx, map_name in enumerate(map_pool):
         team_string += "Press\t" + str(idx + 1) + "\tfor\t" + str(map_name) + "\n"
     if pool == "comp":
@@ -237,12 +246,14 @@ def getmapbanninput(team, pool="comp"):
                 input_valid = True
             elif maps == str(len(map_pool) + 1):
                 maps = getmapbanninput(team, pool="nonComp")
-                banned_maps.append(maps)
+                for imap in maps:
+                    banned_maps.append(imap)
             else:
                 maps = map_pool[int(maps) - 1]
                 banned_maps.append(maps)
         else:
             print("Enter correct number")
+    input(banned_maps)
     return banned_maps
 
 
