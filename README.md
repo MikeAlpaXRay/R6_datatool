@@ -58,3 +58,6 @@ Data is saved in two files. player data and team data respectively.
     - Side
     - Result
     - Victory Type
+    - _Operatorstats (Pandas Dataframe)
+      - Player
+      - Operator_
