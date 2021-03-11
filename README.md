@@ -16,6 +16,9 @@ In [user_constants.py](https://github.com/MikeAlpaXRay/R6_datatool/blob/main/use
 <h2>Maintenance</h2>
 In [program_constants.py](https://github.com/MikeAlpaXRay/R6_datatool/blob/main/program_constants.py) it is possible to add new operators or change map pools.
 
+<h2>Usage</h2>
+Drag and Drop unaltered csv file into bat file.
+
 <h2>Datastructure</h2>
 Data is saved in two files, via pickle. player data and team data respectively.
 
