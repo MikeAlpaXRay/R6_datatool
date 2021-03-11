@@ -107,7 +107,8 @@ class Team:
         # get round data containing site, outcome
         filterd_team_data = player_round_data.loc[player_round_data["Team"] == team]
         filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
-        filterd_data = filterd_data.astype({"Round": 'int'}).set_index("Round")
+        filterd_data = filterd_data.reset_index(drop=True)
+
         # handle match outcome type
         for idx, end_type in enumerate(filterd_data["Victory Type"].values):
             if end_type == "Time Limit Reached":
@@ -139,7 +140,7 @@ class Team:
                             round_op_data._set_value(player, "Operator", op)
                         round_op_data = round_op_data.dropna()
                     op_data.append(round_op_data)
-
                 round_data["Operatorstats"] = op_data
 
+        round_data = round_data.astype({"Round": 'int'}).set_index("Round")
         return round_data
