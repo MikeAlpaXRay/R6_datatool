@@ -36,9 +36,9 @@ def saveData(all_players, all_teams):
         x = os.stat(playerpath)
         y = os.stat(teampath)
         last_updated = (time.time() - max(x, y).st_mtime)
-        print("Last input was longer then " + str(uc.DaysToBackup) + " days in the past. Creating backup")
         if last_updated > uc.DaysToBackup * 24 * 60 * 60:
             # create backup
+            print("Last input was longer then " + str(uc.DaysToBackup) + " days in the past. Creating backup")
             old_all_players, old_all_teams = loadData()
             file_pi2 = open(playerpath_backup, "wb")
             pickle.dump(old_all_players, file_pi2)
