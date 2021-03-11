@@ -1,11 +1,16 @@
+import os
 import sys
 import functions as fnc
 import data_structure as ds
 
 
 def main():
-    for frame in sys.argv[1:]:
-        input(frame)
+    user = sys.argv[-1]
+    for frame in sys.argv[1:-1]:
+        #Loop over all csv files
+        os.system("cls")
+        print("User: " + str(user))
+        print("File Path: " + str(frame))
         csv_frames = fnc.handleCSV(frame)
 
         match_overview = csv_frames[0]
@@ -25,7 +30,7 @@ def main():
         user_input = []
         while not input_correct:
             user_input = fnc.getuserinput(frame, knowndata)
-            print("Matchdata: " + str(user_input[0]) + " | Remarks:\t" + str(user_input[1]) + "\n")
+            print("\n\nMatchdata: " + str(user_input[0]) + " | Remarks:\t" + str(user_input[1]) + "\n")
 
             map_string = ""
             for data in user_input[3]:
@@ -51,12 +56,15 @@ def main():
         orange_team = user_input[5]
 
         if not (blue_team in all_teamnames):
+            print("Add new team...")
             all_teams.append(ds.Team(blue_team))
         if not (orange_team in all_teamnames):
+            print("Add new team...")
             all_teams.append(ds.Team(orange_team))
         for team in all_teams:
+            print("Add team round data...")
             if team.name in [blue_team, orange_team]:
-                team.addMatch(match_overview, player_round_data, user_input)
+                team.addMatch(match_overview, player_round_data, user_input, user)
 
         for player_name in match_performance.Player.values:
             if not (player_name in all_playernames):
@@ -65,10 +73,8 @@ def main():
             else:
                 for player in all_players:
                     if player.name == player_name:
+                        print("Add player match data...")
                         player.addMatch(player_name, match_overview, match_performance)
-
         fnc.saveData(all_players, all_teams)
-
-
 
 main()
