@@ -5,10 +5,11 @@ import random
 import functions as fnc
 import data_structure as ds
 
+
 def main():
     user = sys.argv[-1]
     for frame in sys.argv[1:-1]:
-        #Loop over all csv files
+        # Loop over all csv files
         os.system("cls")
         print("User: " + str(user))
         print("File Path: " + str(frame))
@@ -69,6 +70,7 @@ def main():
 
         for player_name in match_performance.Player.values:
             if not (player_name in all_playernames):
+                print("Add new player match data...")
                 all_players.append(ds.Player(player_name))
                 all_players[len(all_players) - 1].addMatch(player_name, match_overview, match_performance)
             else:
@@ -78,7 +80,7 @@ def main():
                         player.addMatch(player_name, match_overview, match_performance)
         fnc.saveData(all_players, all_teams)
 
-        if random.randint(1, 101) > 99:
+        if random.randint(1, 1001) > 999:
             # this ends the progress bar
             toolbar_width = 100
             # setup toolbar
@@ -90,7 +92,7 @@ def main():
                 time.sleep(1 / random.randint(25, 50))  # do real work here
                 # update the bar
                 if i == (toolbar_width / 4):
-                    sys.stdout.write("T")
+                    sys.stdout.write("TR")
                     sys.stdout.flush()
                 elif (3 * toolbar_width / 4) > i > (toolbar_width / 4):
                     sys.stdout.write("OL")
