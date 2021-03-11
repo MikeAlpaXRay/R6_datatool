@@ -7,7 +7,7 @@ Goal to enable datasience not based on Excel
 
 download git data
 ```
-conda env create -n R6_datatool --file environment.yaml
+conda env create -n R6_datatool --file environment.yaml python=3.8.8
 ```
 Change path in [addData.bat](https://github.com/MikeAlpaXRay/R6_datatool/blob/main/addData.bat) and if desired DEFAULT user, respectively.
 In [user_constants.py](https://github.com/MikeAlpaXRay/R6_datatool/blob/main/user_constants.py) if desired change values of constants.
