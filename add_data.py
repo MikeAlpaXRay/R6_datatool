@@ -1,8 +1,9 @@
 import os
 import sys
+import time
+import random
 import functions as fnc
 import data_structure as ds
-
 
 def main():
     user = sys.argv[-1]
@@ -76,5 +77,31 @@ def main():
                         print("Add player match data...")
                         player.addMatch(player_name, match_overview, match_performance)
         fnc.saveData(all_players, all_teams)
+
+        if random.randint(1, 101) > 99:
+            # this ends the progress bar
+            toolbar_width = 100
+            # setup toolbar
+            sys.stdout.write("[%s]" % (" " * toolbar_width))
+            sys.stdout.flush()
+            sys.stdout.write("\b" * (toolbar_width + 1))  # return to start of line, after '['
+
+            for i in range(toolbar_width):
+                time.sleep(1 / random.randint(25, 50))  # do real work here
+                # update the bar
+                if i == (toolbar_width / 4):
+                    sys.stdout.write("T")
+                    sys.stdout.flush()
+                elif (3 * toolbar_width / 4) > i > (toolbar_width / 4):
+                    sys.stdout.write("OL")
+                    sys.stdout.flush()
+                else:
+                    sys.stdout.write("-")
+                    sys.stdout.flush()
+            sys.stdout.write("]\n")
+
+        print("File Path: " + str(frame))
+        print("Finished")
+
 
 main()
