@@ -5,7 +5,7 @@ Tool to convert the CSV-File form the <a href="https://r6analyst.com/">R6 ANALYS
 Goal to enable datasience not based on Excel
 <h2>Installation</h2>
 
-download git data
+download git data move to tool directory
 ```
 conda env create -n R6_datatool --file environment.yaml python=3.8.8
 ```
