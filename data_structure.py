@@ -143,5 +143,4 @@ class Team:
                 round_data["Operatorstats"] = op_data
 
         round_data = round_data.astype({"Round": 'int'}).set_index("Round")
-
         return round_data
