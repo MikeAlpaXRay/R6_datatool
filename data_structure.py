@@ -18,12 +18,12 @@ class Player:
         filterd_overview = match_overview.iloc[0].drop(
             ["Team 1", "Team 2", "Team 1 Score", "Team 2 Score", "ATK at Start", "Team 1 ATK Wins", "Team 1 DEF Wins",
              "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half", "Team 2 Score at Half"])
-        filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
 
+        filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
         # drop unwanted data
         filterd_performance = filterd_performance.drop(
             ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff.", "HS%", "ATK Op", "DEF Op",
-             "In-game Points"])
+             "In-game Points", "Unnamed: 34"])
 
         #ToDo: Draw?
         if filterd_overview["Winner"] == filterd_performance["Team"]:
@@ -101,7 +101,7 @@ class Team:
 
         else:
             print("Matchdata already added")
-            time.sleep(5)
+            time.sleep(3)
 
     def getRoundData(self, player_round_data, team, user):
         # get round data containing site, outcome
@@ -113,9 +113,9 @@ class Team:
         for idx, end_type in enumerate(filterd_data["Victory Type"].values):
             if end_type == "Time Limit Reached":
                 if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
-                    filterd_data.loc[idx + 1, "Victory Type"] = "Time Limit Reached"
+                    filterd_data.loc[idx, "Victory Type"] = "Time Limit Reached"
                 else:
-                    filterd_data.loc[idx + 1, "Victory Type"] = "Team Killed"
+                    filterd_data.loc[idx, "Victory Type"] = "Team Killed"
 
         # drop unwanted data
         round_data = filterd_data.drop(
@@ -126,6 +126,7 @@ class Team:
              "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
              "Teamkilled", "In-game Points", "Unnamed: 31"], axis='columns')
 
+        input(round_data)
         # experimental feature
         if user == "NGNS":
             if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
@@ -143,4 +144,6 @@ class Team:
                 round_data["Operatorstats"] = op_data
 
         round_data = round_data.astype({"Round": 'int'}).set_index("Round")
+
+        input(round_data)
         return round_data
