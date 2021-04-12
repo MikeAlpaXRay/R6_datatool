@@ -5,8 +5,9 @@ Tool to convert the CSV-File form the <a href="https://r6analyst.com/">R6 ANALYS
 Goal to enable datasience not based on Excel
 <h2>Installation</h2>
 
-download git data move to tool directory
+download git data and move to tool directory in your cmd then enter
 ```
+mkdir data
 conda env create -n R6_datatool --file environment.yaml python=3.8.8
 ```
 Change path in [addData.bat](https://github.com/MikeAlpaXRay/R6_datatool/blob/main/addData.bat) and if desired DEFAULT user, respectively.
