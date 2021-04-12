@@ -4,4 +4,4 @@ playerNames = ["Crowdsurfr.NGNS", "Jojo.NGNS", "memez.NGNS", "MikeAlpaX.NGNS", "
 # game mode without game mode info
 noMatchInfoMode = "Scrim"
 # days until backup files are created
-DaysToBackup = 10
+DaysToBackup = 5
