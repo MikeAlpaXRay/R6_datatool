@@ -126,7 +126,6 @@ class Team:
              "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
              "Teamkilled", "In-game Points", "Unnamed: 31"], axis='columns')
 
-        input(round_data)
         # experimental feature
         if user == "NGNS":
             if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
@@ -145,5 +144,4 @@ class Team:
 
         round_data = round_data.astype({"Round": 'int'}).set_index("Round")
 
-        input(round_data)
         return round_data
