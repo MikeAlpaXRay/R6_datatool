@@ -22,7 +22,7 @@ class Player:
         filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
         # drop unwanted data
         filterd_performance = filterd_performance.drop(
-            ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff.", "HS%", "ATK Op", "DEF Op",
+            ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff", "HS%", "ATK Op", "DEF Op",
              "In-game Points", "Unnamed: 34"])
 
         #ToDo: Draw?
