@@ -5,7 +5,7 @@ team_match_columns_names = ["Match ID", "Timestamp", "Gamemode", "Comp Info", "B
                             "Outcome",
                             "Own Score", "Enemy Score", "Rounds"]
 # maps in comp map pool
-compMaps = ["Chalet", "Clubhouse", "Coastline", "Consulate", "Kafe Dostoyevsky", "Oregon", "Villa"]
+compMaps = ["Chalet", "Club House", "Coastline", "Consulate", "Kafe Dostoyevsky", "Oregon", "Villa"]
 # maps in noncomp map pool
 nonCompMaps = ["Bank", "Border", "Favela", "Fortress", "Hereford Base", "House", "Kanal", "Outback",
                "Presidential Plane", "Skyscraper", "Theme Park", "Tower", "Yacht"]
