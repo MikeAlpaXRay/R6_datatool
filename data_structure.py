@@ -68,32 +68,38 @@ class Team:
                 outcome = "Draw"
             else:
                 outcome = mo["Winner"].values[0]
-            if not (outcome == "Draw"):
-                if self.name == blue_team:
-                    if outcome == "Blue":
+                if outcome == "Blue":
+                    if self.name == blue_team:
                         outcome = "Win"
                     else:
                         outcome = "Lose"
                 else:
-                    if outcome == "Orange":
-                        outcome = "Win"
+                    if self.name == blue_team:
+                        outcome = "Loss"
                     else:
-                        outcome = "Lose"
+                        outcome = "Win"
+            if outcome == "Win":
+                own_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+                enemy_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+            elif outcome == "Loss":
+                own_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+                enemy_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+            else:
+                own_score = mo["Team 1 Score"].values[0]
+                enemy_score = mo["Team 1 Score"].values[0]
+
 
             if self.name == blue_team:
                 # add round data
                 round_data = self.getRoundData(player_round_data, "Blue", user)
                 banned_maps = blue_maps
                 banned_ops = blue_ops
-                own_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
-                enemy_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
             else:
                 # add round data
                 round_data = self.getRoundData(player_round_data, "Orange", user)
                 banned_maps = orange_maps
                 banned_ops = orange_ops
-                own_score = min(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
-                enemy_score = max(mo["Team 1 Score"].values[0], mo["Team 2 Score"].values[0])
+
             data = [mo["Match ID"].values[0], mo["Timestamp"].values[0], gamemode, match_info, banned_maps, banned_ops,
                     mo["Map"].values[0], outcome, own_score, enemy_score, round_data]
 
