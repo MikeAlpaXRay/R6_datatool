@@ -25,11 +25,12 @@ class Player:
             ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff", "HS%", "ATK Op", "DEF Op",
              "In-game Points", "Unnamed: 34"])
 
-        #ToDo: Draw?
         if filterd_overview["Winner"] == filterd_performance["Team"]:
-            filterd_overview["Winner"] = True
+            filterd_overview["Winner"] = "Win"
+        elif filterd_overview["Winner"] == "Draw":
+            filterd_overview["Winner"] = "Draw"
         else:
-            filterd_overview["Winner"] = False
+            filterd_overview["Winner"] = "Lose"
 
         # merge wanted data
         filterd_data = pd.concat([filterd_overview, filterd_performance.drop("Team")])
