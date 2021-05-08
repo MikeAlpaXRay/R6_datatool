@@ -115,13 +115,13 @@ class Team:
         filterd_data = filterd_data.reset_index(drop=True)
 
         # handle match outcome type
-        # for idx, end_type in enumerate(filterd_data["Victory Type"].values):
-        #     if end_type == "Time Limit Reached":
-        #         if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
-        #             filterd_data.loc[idx, "Victory Type"] = "Time Limit Reached"
-        #         else:
-        #             #während Plant gekilled
-        #             filterd_data.loc[idx, "Victory Type"] = "Elimination"
+        for idx, end_type in enumerate(filterd_data["Victory Type"].values):
+            if end_type == "Time Limit Reached":
+                if int(filterd_data["Round Time (ms)"].iloc[idx]) >= 225000:
+                    filterd_data.loc[idx, "Victory Type"] = "Time Limit Reached"
+                else:
+                    #während Plant gekilled
+                    filterd_data.loc[idx, "Victory Type"] = "Elimination during Plant"
 
         # drop unwanted data
         round_data = filterd_data.drop(
