@@ -48,7 +48,7 @@ class Team:
         # data frame of matches each row represents a match
         self.matches = pd.DataFrame(columns=fnc.pc.team_match_columns_names)
 
-    def addMatch(self, match_overview, player_round_data, user_input, user):
+    def addMatch(self, match_overview, player_round_data, user_input):
         # add match data to team matches data frame
         mo = match_overview
         # check if match already added
@@ -90,12 +90,12 @@ class Team:
 
             if self.name == blue_team:
                 # add round data
-                round_data = self.getRoundData(player_round_data, "Blue", user)
+                round_data = self.getRoundData(player_round_data, "Blue")
                 banned_maps = blue_maps
                 banned_ops = blue_ops
             else:
                 # add round data
-                round_data = self.getRoundData(player_round_data, "Orange", user)
+                round_data = self.getRoundData(player_round_data, "Orange")
                 banned_maps = orange_maps
                 banned_ops = orange_ops
 
@@ -108,7 +108,7 @@ class Team:
             print("Matchdata already added")
             time.sleep(3)
 
-    def getRoundData(self, player_round_data, team, user):
+    def getRoundData(self, player_round_data, team):
         # get round data containing site, outcome
         filterd_team_data = player_round_data.loc[player_round_data["Team"] == team]
         filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
@@ -132,21 +132,22 @@ class Team:
              "Opening Death", "Entry Kill", "Entry Death", "Planted Defuser", "Disabled Defuser", "Teamkills",
              "Teamkilled", "In-game Points", "Unnamed: 31"], axis='columns')
 
-        # experimental feature
-        if user == "NGNS":
-            if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
-                op_data = []
-                round_op_data = pd.DataFrame([], index=fnc.uc.playerNames, columns=["Operator"])
-                round_op_data.index.name = "Player"
-                for round in list(set(filterd_team_data["Round"].values)):
-                    test = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
-                    for player in fnc.uc.playerNames:
-                        if player in test["Player"].values:
-                            op = test.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
-                            round_op_data._set_value(player, "Operator", op)
-                        round_op_data = round_op_data.dropna()
-                    op_data.append(round_op_data)
-                round_data["Operatorstats"] = op_data
+        # op tracking
+        if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
+            op_data = []
+            round_op_data = pd.DataFrame([], index=fnc.uc.playerNames, columns=["Operator"])
+            round_op_data.index.name = "Player"
+            for round in list(set(filterd_team_data["Round"].values)):
+                round_info = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
+                for player in fnc.uc.playerNames:
+                    if player in round_info["Player"].values:
+                        op = round_info.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
+                        round_op_data._set_value(player, "Operator", op)
+                    round_op_data = round_op_data.dropna()
+                op_data.append(round_op_data)
+            round_data["Operatorstats"] = op_data
 
         round_data = round_data.astype({"Round": 'int'}).set_index("Round")
         return round_data
+
+
