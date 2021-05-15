@@ -1,0 +1,132 @@
+[
+    {
+        "name": "Chalet",
+        "comp": true,
+        "objectives": [
+            "bar_gaming",
+            "kitchen_dining",
+            "master_office",
+            "wine_snowmobile"
+        ]
+    },
+    {
+        "name": "Club House",
+        "comp": true,
+        "objectives": [
+            "bar_stock",
+            "cctv_cash",
+            "church_arsenal",
+            "gym_bedroom"
+        ]
+    },
+    {
+        "name": "Coastline",
+        "comp": true,
+        "objectives": [
+            "blue_sunrise",
+            "hookah_billiards",
+            "kitchen_service",
+            "penthouse_theater"
+        ]
+    },
+    {
+        "name": "Consulate",
+        "comp": true,
+        "objectives": []
+    },
+    {
+        "name": "Kafe Dostoyevsky",
+        "comp": true,
+        "objectives": [
+            "bar_cocktail",
+            "fireplace_mining",
+            "kitchen",
+            "reading_fireplace"
+        ]
+    },
+    {
+        "name": "Oregon",
+        "comp": true,
+        "objectives": [
+            "kids_dorms",
+            "kitchen_dining",
+            "laundry_supply",
+            "meeting_kitchen"
+        ]
+    },
+    {
+        "name": "Villa",
+        "comp": true,
+        "objectives": [
+            "aviator_games",
+            "dining_kitchen",
+            "living_library",
+            "trophy_statuary"
+        ]
+    },
+    {
+        "name": "Bank",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Border",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Favela",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Fortress",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Hereford Base",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "House",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Kanal",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Outback",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Presidential Plane",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Skyscraper",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Theme Park",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Tower",
+        "comp": false,
+        "objectives": []
+    },
+    {
+        "name": "Yacht",
+        "comp": false,
+        "objectives": []
+    }
+]
