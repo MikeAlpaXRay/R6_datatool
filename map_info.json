@@ -32,7 +32,12 @@
     {
         "name": "Consulate",
         "comp": true,
-        "objectives": []
+        "objectives": [
+            "consul_meeting",
+            "lobby_press",
+            "cafeteria_garage",
+            "archives_tellers"
+        ]
     },
     {
         "name": "Kafe Dostoyevsky",

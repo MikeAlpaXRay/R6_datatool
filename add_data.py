@@ -13,7 +13,8 @@ def main():
         os.system("cls")
         print("User: " + str(user))
         print("File Path: " + str(frame))
-        csv_frames = fnc.handleCSV(frame)
+
+        csv_frames = fnc.handlefileinput(frame)
 
         match_overview = csv_frames[0]
         match_performance = csv_frames[1]
@@ -31,7 +32,7 @@ def main():
         input_correct = False
         user_input = []
         while not input_correct:
-            user_input = fnc.getuserinput(frame, knowndata)
+            user_input = fnc.handleuserinput(knowndata)
             print("\n\nMatchdata: " + str(user_input[0]) + " | Remarks:\t" + str(user_input[1]) + "\n")
 
             map_string = ""
@@ -66,18 +67,21 @@ def main():
         for team in all_teams:
             print("Add team round data...")
             if team.name in [blue_team, orange_team]:
-                team.addMatch(match_overview, player_round_data, user_input, user)
+                try:
+                    team.addMatch(match_overview, player_round_data, user_input, roundoverview)
+                except NameError:
+                    roundoverview = team.addMatch(match_overview, player_round_data, user_input)
 
         for player_name in match_performance.Player.values:
             if not (player_name in all_playernames):
                 print("Add new player match data...")
                 all_players.append(ds.Player(player_name))
-                all_players[len(all_players) - 1].addMatch(player_name, match_overview, match_performance)
+                all_players[len(all_players) - 1].addMatch(player_name, match_overview, match_performance, roundoverview)
             else:
                 for player in all_players:
                     if player.name == player_name:
                         print("Add player match data...")
-                        player.addMatch(player_name, match_overview, match_performance)
+                        player.addMatch(player_name, match_overview, match_performance, roundoverview)
         fnc.saveData(all_players, all_teams)
 
         if random.randint(1, 1001) > 999:
