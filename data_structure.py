@@ -9,38 +9,50 @@ class Player:
         # name of player
         self.name = name
         # data frame of matches each row represents a match
-        self.matches = pd.DataFrame()
+        self.matches = pd.DataFrame(columns=["Match ID"])
 
     def addMatch(self, playername, match_overview, match_performance, roundoverview):
         # add match data to player matches data frame
 
-        # drop unwanted data
-        filterd_overview = match_overview.iloc[0].drop(
-            ["Team 1", "Team 2", "Team 1 Score", "Team 2 Score", "ATK at Start", "Team 1 ATK Wins", "Team 1 DEF Wins",
-             "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half", "Team 2 Score at Half"])
 
-        filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
-        # drop unwanted data
-        filterd_performance = filterd_performance.drop(
-            ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff", "HS%", "ATK Op", "DEF Op",
-             "In-game Points", "Unnamed: 34"])
+        # check if match already added
+        if not (match_overview["Match ID"].values[0] in self.matches["Match ID"].values):
+            # drop unwanted data
+            filterd_overview = match_overview.filter(['Match ID', 'Timestamp', "Map"]).squeeze()
+            # filterd_overview = match_overview.iloc[0].drop(
+            #     ["Team 1", "Team 2", "Team 1 Score", "Team 2 Score", "ATK at Start", "Team 1 ATK Wins", "Team 1 DEF Wins",
+            #      "Team 2 ATK Wins", "Team 2 DEF Wins", "Team 1 Score at Half", "Team 2 Score at Half"])
+
+            filterd_performance = match_performance.loc[fnc.getplayerindex(playername, match_performance)]
+            # drop unwanted data
+            try:
+                filterd_performance = filterd_performance.drop(
+                    ["Match ID", "Player", "K-D (+/-)", "Entry (+/-)", "Trade Diff", "HS%", "ATK Op", "DEF Op",
+                     "In-game Points", "Unnamed: 34"])
+            except KeyError:
+                filterd_performance = filterd_performance.drop(["Match ID", "Player"])
 
 
-        round_won = roundoverview["Win Team"].tolist().count(filterd_performance["Team"])
-        if round_won > (len(roundoverview["Win Team"]) - round_won):
-            filterd_overview["Winner"] = True
-        else:
-            filterd_overview["Winner"] = False
 
 
-        # merge wanted data
-        filterd_data = pd.concat([filterd_overview, filterd_performance.drop("Team")])
-        # check if match already added or first match
-        if not self.matches.empty:
-            if not (filterd_overview["Match ID"] in self.matches["Match ID"].values):
+            round_won = roundoverview["Win Team"].tolist().count(filterd_performance["Team"])
+            if round_won > (len(roundoverview["Win Team"]) - round_won):
+                filterd_overview["Winner"] = True
+            else:
+                filterd_overview["Winner"] = False
+
+
+            # merge wanted data
+            filterd_data = pd.concat([filterd_overview, filterd_performance.drop("Team")])
+            # check if match already added or first match
+            if not self.matches.empty:
+                if not (filterd_overview["Match ID"] in self.matches["Match ID"].values):
+                    self.matches = self.matches.append(filterd_data, ignore_index=True)
+            else:
                 self.matches = self.matches.append(filterd_data, ignore_index=True)
+
         else:
-            self.matches = self.matches.append(filterd_data, ignore_index=True)
+            print("Matchdata already added")
 
 
 class Team:
@@ -70,7 +82,7 @@ class Team:
                 # add round data
                 print("Perspective of " + str(self.name))
                 if len(roundoverview) == 0:
-                    roundoverview = fnc.getrounddata(player_round_data, "Blue")
+                    roundoverview = fnc.getrounddata(player_round_data, "Blue", mo["Map"].values[0])
                 round_data = self.getRoundData(roundoverview, player_round_data, "Blue")
                 banned_maps = blue_maps
                 banned_ops = blue_ops
@@ -78,7 +90,7 @@ class Team:
                 # add round data
                 print("Perspective of " + str(self.name))
                 if len(roundoverview) == 0:
-                    roundoverview = fnc.getrounddata(player_round_data, "Orange")
+                    roundoverview = fnc.getrounddata(player_round_data, "Orange", mo["Map"].values[0])
                 round_data = self.getRoundData(roundoverview, player_round_data, "Orange")
                 banned_maps = orange_maps
                 banned_ops = orange_ops
@@ -111,10 +123,6 @@ class Team:
         return roundoverview
 
     def getRoundData(self, roundoverview, player_round_data, team):
-        # get round data containing site, outcome
-        filterd_team_data = player_round_data.loc[player_round_data["Team"] == team]
-        filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
-        filterd_data = filterd_data.reset_index(drop=True)
 
         round_data = roundoverview.copy()
         round_data["Round"] = round_data.index.values
@@ -143,23 +151,29 @@ class Team:
                     else:
                         round_data.loc[index, "Victory Type"] = "Defuser Planted"
 
-        # op tracking
-        if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
-            op_data = []
-            for round in round_data["Round"].values:
-                round_info = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
-                if round in list(set(filterd_team_data["Round"].values)):
-                    round_op_data = pd.DataFrame([], index=fnc.uc.playerNames, columns=["Operator"])
-                    round_op_data.index.name = "Player"
-                    for player in fnc.uc.playerNames:
-                        if player in round_info["Player"].values:
-                            op = round_info.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
-                            round_op_data._set_value(player, "Operator", op)
-                        round_op_data = round_op_data.dropna()
-                else:
-                    round_op_data = []
-                op_data.append(round_op_data)
-            round_data["Operatorstats"] = op_data
+        if not len(player_round_data) == 0:
+            # get round data containing site, outcome
+            filterd_team_data = player_round_data.loc[player_round_data["Team"] == team]
+            filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
+            filterd_data = filterd_data.reset_index(drop=True)
+
+            # op tracking
+            if filterd_team_data["Player"].values[0] in fnc.uc.playerNames:
+                op_data = []
+                for round in round_data["Round"].values:
+                    round_info = filterd_team_data.loc[filterd_team_data["Round"] == int(round)]
+                    if round in list(set(filterd_team_data["Round"].values)):
+                        round_op_data = pd.DataFrame([], index=fnc.uc.playerNames, columns=["Operator"])
+                        round_op_data.index.name = "Player"
+                        for player in fnc.uc.playerNames:
+                            if player in round_info["Player"].values:
+                                op = round_info.loc[filterd_team_data["Player"] == player]["Operator"].values[0]
+                                round_op_data._set_value(player, "Operator", op)
+                            round_op_data = round_op_data.dropna()
+                    else:
+                        round_op_data = []
+                    op_data.append(round_op_data)
+                round_data["Operatorstats"] = op_data
         column_names = round_data.columns.values
         if len(column_names) == 5:
             round_data.columns = ["Side", "Site", "Result", "Victory Type", "Round"]

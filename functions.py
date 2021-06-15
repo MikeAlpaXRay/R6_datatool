@@ -4,6 +4,7 @@ import csv
 import pathlib
 import pickle
 import json
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from os.path import exists
@@ -408,37 +409,40 @@ def editrow(row, column_name, map):
                 print("Enter correct number\n")
 
 
-def getrounddata(player_round_data, team):
+def getrounddata(player_round_data, team, map):
     perspective = team
     if perspective == "Blue":
         anti_perspective = "Orange"
     else:
         anti_perspective = "Blue"
 
+    if not len(player_round_data) == 0:
+        filterd_team_data = player_round_data.loc[player_round_data["Team"] == perspective]
+        filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
+        filterd_data = filterd_data.reset_index(drop=True)
 
-    filterd_team_data = player_round_data.loc[player_round_data["Team"] == perspective]
-    filterd_data = filterd_team_data.loc[filterd_team_data["Player"] == filterd_team_data["Player"].values[0]]
-    filterd_data = filterd_data.reset_index(drop=True)
+        round_breakdown = pd.DataFrame([], index=range(1, len(filterd_data) + 1), columns=["Round", "Att Team", "Side", "Win Team", "Victory Type"])
+        round_breakdown["Round"] = filterd_data["Round"].values
+        round_breakdown["Side"] = filterd_data["Site"].values
+        round_breakdown["Victory Type"] = filterd_data["Victory Type"].values
+        round_breakdown["Att Team"] = filterd_data["Side"].values
+        round_breakdown["Win Team"] = filterd_data["Result"].values
+        round_breakdown = round_breakdown.set_index('Round')
 
-    round_breakdown = pd.DataFrame([], index=range(1, len(filterd_data) + 1), columns=["Round", "Att Team", "Side", "Win Team", "Victory Type"])
-    round_breakdown["Round"] = filterd_data["Round"].values
-    round_breakdown["Side"] = filterd_data["Site"].values
-    round_breakdown["Victory Type"] = filterd_data["Victory Type"].values
-    round_breakdown["Att Team"] = filterd_data["Side"].values
-    round_breakdown["Win Team"] = filterd_data["Result"].values
 
-    round_breakdown = round_breakdown.set_index('Round')
+        for row in round_breakdown.iterrows():
+            row = row[1]
+            if row["Att Team"] == "Attack":
+                row.at["Att Team"] = perspective
+            else:
+                row.at["Att Team"] = anti_perspective
+            if row["Win Team"] == "Win":
+                row.at["Win Team"] = perspective
+            else:
+                row.at["Win Team"] = anti_perspective
 
-    for row in round_breakdown.iterrows():
-        row = row[1]
-        if row["Att Team"] == "Attack":
-            row.at["Att Team"] = perspective
-        else:
-            row.at["Att Team"] = anti_perspective
-        if row["Win Team"] == "Win":
-            row.at["Win Team"] = perspective
-        else:
-            row.at["Win Team"] = anti_perspective
+    else:
+        round_breakdown = pd.DataFrame([], index=[], columns=["Att Team", "Side", "Win Team", "Victory Type"])
 
 
     round_input_correct = False
@@ -451,13 +455,14 @@ def getrounddata(player_round_data, team):
             round_input_correct = True
         elif round_input in "edit":
             round_no = input("Enter round number to add or delete new round\n")
-            if round_no.isdigit() and int(round_no) not in round_breakdown.index.values:
+            if round_no.isdigit() and int(round_no) in round_breakdown.index.values:
+                round_breakdown = round_breakdown.drop(index=int(round_no))
+            elif round_no.isdigit() and int(round_no) not in round_breakdown.index.values and not int(round_no) == 0:
                 new_row = pd.DataFrame([[int(round_no), "Attacker", "unknown", "Winner", "End"]], columns=["Round", "Att Team", "Side", "Win Team", "Victory Type"])
                 new_row = new_row.set_index('Round')
-                round_breakdown = round_breakdown.append(new_row).sort_index()
-            if round_no.isdigit() and int(round_no) in round_breakdown.index.values:
-                print("deleting not yet implemented")
-                #todo
+                round_breakdown = round_breakdown.append(new_row)
+            round_breakdown.index.name = "Round"
+            round_breakdown = round_breakdown.sort_index()
         else:
             if round_input.isdigit() and  int(round_input) in range(1, len(round_breakdown) + 1):
                 round_count = int(round_input) - 1
@@ -471,7 +476,7 @@ def getrounddata(player_round_data, team):
                     if change_pick.isdigit() and int(change_pick) in range(1, len(round_breakdown.columns.values) + 3):
                         change_pick = int(change_pick) - 1
                         change_input_correct = True
-                        editrow(round_breakdown.iloc[round_count], round_breakdown.columns.values[change_pick], filterd_data["Map"][0])
+                        editrow(round_breakdown.iloc[round_count], round_breakdown.columns.values[change_pick], map)
                     else:
                         print("Enter correct number\n")
 
@@ -490,20 +495,28 @@ def getrounddata(player_round_data, team):
 def handlefileinput(frame):
     filetype = pathlib.Path(frame).suffix
 
-    # print(loadjsonmapdata(comp=True, name="Club House", key="Objectives"))
     if filetype == ".xlsx":
         playedMap = getmapbanninput(played=True)
         csv_frames = [[],[],[],[]]
-        match_info = pd.read_excel(frame)
-        if not len(match_info["Player"].values) == 10 and not len(match_info["Kills"].values) ==\
-                                                              10 and not len(match_info["Deaths"].values) == 10:
+        match_overview = pd.DataFrame()
+        match_performance = pd.read_excel(frame)
+        if not len(match_performance["Player"].values) == 10 and not len(match_performance["Kills"].values) ==\
+                                                                     10 and not len(match_performance["Deaths"].values) == 10:
             print("Enter all Playerdata")
             exit()
         print("User scoreboard is used...")
         match_id = str(playedMap[0]).lower().replace(" ", "") + "_" + str(time.time()).split(".")[0]
-        match_info = match_info.drop(["Scorebord_Userinput"], axis=1)
-        match_info["match ID"] = pd.Series([match_id for x in range(len(match_info.index))])
-        csv_frames[1] = match_info
+        match_performance = match_performance.drop(["Scorebord_Userinput"], axis=1)
+        match_performance["Match ID"] = pd.Series([match_id for x in range(len(match_performance.index))])
+        match_overview["Match ID"] = [match_id]
+        month = datetime.strptime(datetime.now().strftime("%m"), "%m").strftime("%B")
+        match_overview["Timestamp"] = datetime.now().strftime(month + " %d %Y %H:%M")
+        match_overview["Map"] = playedMap
+
+
+
+        csv_frames[0] = match_overview
+        csv_frames[1] = match_performance
         match_performance = []
 
     else:
